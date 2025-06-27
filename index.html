@@ -610,7 +610,7 @@
             <div class="text-center">
                 <!-- <div class="hero-image mx-auto"><img src="images/image1.png"></div> -->
                 <div class="hero-image mx-auto">
-                    <img src="images/image4.png" class="hero-img-inner">
+                    <img src="image4.png" class="hero-img-inner">
                 </div>
                 <h1 class="text-6xl font-bold mb-4">Nikita Patidar</h1>
                 <div class="typing-animation mb-8" id="typing-text"></div>
@@ -625,7 +625,7 @@
                     <button class="btn-primary bg-transparent border-2 border-cyan-400 hover:bg-cyan-400">
                         <i class="fas fa-envelope mr-2"></i>Get In Touch
                     </button> -->
-                    <a href="files/resume.pdf" download class="btn-primary inline-flex items-center">
+                    <a href="resume.pdf" download class="btn-primary inline-flex items-center">
                         <i class="fas fa-download mr-2"></i>Download Resume
                     </a>
 
@@ -646,7 +646,7 @@
                 <div class="animate-card p-8 rounded-2xl">
                     <h3 class="text-2xl font-bold mb-4 text-cyan-400" style="text-align: center;">My Story</h3>
                     <div class="about-me-image-container" data-tilt data-tilt-max="20" data-tilt-glare data-tilt-max-glare="0.5">
-                        <img src="./images/nikita1.jpeg" alt="John Smith working" class="about-me-image">
+                        <img src="nikita1.jpeg" alt="John Smith working" class="about-me-image">
                         <div class="about-me-image-overlay"></div>
                     </div>
                     <!-- <div id="about-three-scene"></div> -->
@@ -1197,7 +1197,7 @@
         const textureLoader = new THREE.TextureLoader();
         const sphereGeometry = new THREE.SphereGeometry(2, 32, 32);
         const sphereMaterial = new THREE.MeshBasicMaterial({
-            map: textureLoader.load('images/profile1.jpg'), // Local path to first image
+            map: textureLoader.load('profile1.jpg'), // Local path to first image
             transparent: true
         });
         const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
@@ -1229,7 +1229,7 @@
         // About Scene: Floating plane with second professional image
         const planeGeometry = new THREE.PlaneGeometry(4, 4);
         const planeMaterial = new THREE.MeshBasicMaterial({
-            map: textureLoader.load('images/nikita1.jpeg'), // Local path to second image
+            map: textureLoader.load('nikita1.jpeg'), // Local path to second image
             side: THREE.DoubleSide,
             transparent: true
         });
