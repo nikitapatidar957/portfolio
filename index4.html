@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nikita Patidar Portfolio </title>
+    
+    <!-- External Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.156.1/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Particle Background */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        /* 3D Scene */
+        #three-scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 0;
+        }
+
+        /* About 3D Scene */
+        #about-three-scene {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            margin-bottom: 2rem;
+            z-index: 1;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(45deg, #00f5ff, #0099ff);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Section Styling */
+        .section {
+            min-height: 100vh;
+            padding: 80px 0;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, #00f5ff, #0099ff, #00f5ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Home Section */
+        .hero-content {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-image {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00f5ff, #0099ff, #00ccff);
+            position: relative;
+            margin-bottom: 2rem;
+            /* animation: float 6s ease-in-out infinite; */
+            box-shadow: 0 0 50px rgba(0, 245, 255, 0.3);
+        }
+
+        .hero-image::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: #0a0a0a;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .typing-animation {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: #00f5ff;
+            border-right: 2px solid #00f5ff;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { border-color: #00f5ff; }
+            51%, 100% { border-color: transparent; }
+        }
+
+        /* Card Animations */
+        /* .animate-card {
+            transition: all 0.5s ease;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        } */
+        .animate-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 245, 255, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            height: -webkit-fill-available;
+        }
+
+        .animate-card:hover {
+            transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 20px 40px rgba(0, 245, 255, 0.3);
+            border-color: rgba(0, 245, 255, 0.4);
+        }
+        /* New About Me Image Styling */
+        .about-me-image-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            perspective: 1000px;
+            transition: transform 0.5s ease;
+        }
+
+        .about-me-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            object-fit: cover;
+            border: 2px solid rgba(0, 245, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.3);
+            transition: all 0.3s ease;
+            object-position: top;
+        }
+
+        .about-me-image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                rgba(0, 245, 255, 0.1),
+                rgba(255, 0, 255, 0.1),
+                rgba(0, 255, 0, 0.1));
+            border-radius: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .about-me-image-container:hover .about-me-image-overlay {
+            opacity: 1;
+        }
+        
+        .animate-card h3 {
+            color: #00f5ff;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .skills-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .skill-item {
+            position: relative;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .skill-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .skill-item:hover::before {
+            left: 100%;
+        }
+
+        .skill-item:hover {
+            transform: translateY(-8px);
+            border-color: #00f5ff;
+            background: rgba(0, 245, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 245, 255, 0.3);
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .skill-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ffffff;
+            transition: color 0.3s ease;
+        }
+
+        .skill-item:hover .skill-name {
+            color: #00f5ff;
+        }
+
+        .skill-level {
+            font-size: 0.9rem;
+            color: #00f5ff;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .skill-item:hover .skill-level {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .skill-description {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            line-height: 1.4;
+        }
+
+        .skill-item:hover .skill-description {
+            opacity: 1;
+            max-height: 100px;
+            margin-top: 0.5rem;
+        }
+
+        .skill-icons {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            opacity: 0.3;
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover .skill-icons {
+            opacity: 1;
+            color: #00f5ff;
+            transform: rotate(360deg);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .animate-card {
+                padding: 1.5rem;
+            }
+            
+            .skill-item {
+                padding: 1rem;
+            }
+        }
+
+        /* Floating particles animation */
+        .skill-item::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00f5ff;
+            border-radius: 50%;
+            top: 20%;
+            right: 20%;
+            opacity: 0;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        .skill-item:hover::after {
+            opacity: 1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Project Cards */
+        .project-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            transform-style: preserve-3d;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px) rotateX(10deg) rotateY(10deg);
+            box-shadow: 0 20px 50px rgba(0, 245, 255, 0.3);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.5s ease;
+        }
+
+        .project-card:hover .project-image {
+            transform: scale(1.1);
+        }
+
+        .project-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Contact Form */
+        .form-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #00f5ff;
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(45deg, #00f5ff, #0099ff);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 245, 255, 0.4);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        /* Social Links */
+        .social-link {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .social-link:hover {
+            transform: translateY(-5px) rotate(360deg);
+            background: linear-gradient(45deg, #00f5ff, #0099ff);
+            box-shadow: 0 10px 20px rgba(0, 245, 255, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .hero-image {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .hero-image::before {
+                width: 180px;
+                height: 180px;
+            }
+
+            #about-three-scene {
+                height: 200px;
+            }
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 2rem 0;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #00f5ff, #0099ff);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+            transition: all 0.5s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateX(10px);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -7px;
+            top: 0;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #00f5ff;
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .timeline-item:hover::before {
+            transform: scale(1.5);
+        }
+        .hero-img-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 260px;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        @media (max-width: 768px) {
+            .hero-img-inner {
+                width: 160px;
+                height: 160px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Particle Background -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- 3D Scene for Home -->
+    <div id="three-scene"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="text-2xl font-bold">
+                    <span class="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text ">Nikita</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link text-white hover:text-cyan-400">Home</a>
+                    <a href="#about" class="nav-link text-white hover:text-cyan-400">About</a>
+                    <a href="#resume" class="nav-link text-white hover:text-cyan-400">Resume</a>
+                    <a href="#projects" class="nav-link text-white hover:text-cyan-400">Projects</a>
+                    <a href="#contact" class="nav-link text-white hover:text-cyan-400">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-white">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="section">
+        <div class="hero-content">
+            <div class="text-center">
+                <!-- <div class="hero-image mx-auto"><img src="images/image1.png"></div> -->
+                <div class="hero-image mx-auto">
+                    <img src="images/image4.png" class="hero-img-inner">
+                </div>
+                <h1 class="text-6xl font-bold mb-4">Nikita Patidar</h1>
+                <div class="typing-animation mb-8" id="typing-text"></div>
+                <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                    Passionate Data Scientist with expertise in Gen Ai, Deep Learning, and Statistical Analysis. 
+                    Transforming complex data into actionable insights and innovative solutions.
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <!-- <button class="btn-primary">
+                        <i class="fas fa-download mr-2"></i>Download Resume
+                    </button>
+                    <button class="btn-primary bg-transparent border-2 border-cyan-400 hover:bg-cyan-400">
+                        <i class="fas fa-envelope mr-2"></i>Get In Touch
+                    </button> -->
+                    <a href="files/resume.pdf" download class="btn-primary inline-flex items-center">
+                        <i class="fas fa-download mr-2"></i>Download Resume
+                    </a>
+
+
+                    <a href="#contact" class="btn-primary bg-transparent border-2 border-cyan-400 hover:bg-cyan-400 inline-flex items-center">
+                        <i class="fas fa-envelope mr-2"></i>Get In Touch
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title">About Me</h2>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="animate-card p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-4 text-cyan-400" style="text-align: center;">My Story</h3>
+                    <div class="about-me-image-container" data-tilt data-tilt-max="20" data-tilt-glare data-tilt-max-glare="0.5">
+                        <img src="./images/nikita1.jpeg" alt="John Smith working" class="about-me-image">
+                        <div class="about-me-image-overlay"></div>
+                    </div>
+                    <!-- <div id="about-three-scene"></div> -->
+                    <br>
+                    <p class="text-gray-300 mb-4">
+                        With over 1.5 years of experience in data science and AI, I focus on leveraging large language models (LLMs), generative AI, and agentic AI systems to solve complex problems and create intelligent workflows. My core strength lies in designing prompt-based solutions and building intelligent agents that interact, reason, and adapt.
+                    </p>
+                    <p class="text-gray-300 mb-4">
+                        I've contributed to projects involving natural language understanding, generative content creation, and autonomous task automation—resulting in streamlined operations and innovative user experiences. I enjoy crafting effective prompt strategies, orchestrating multi-agent systems, and experimenting with the latest advances in foundation models.
+                    </p>
+                    <p class="text-gray-300">
+                        Outside of work, I actively follow emerging trends in AI, contribute to open-source projects, and share insights through technical blogs and community events. I’m passionate about making advanced AI more usable, explainable, and impactful.
+                    </p>
+
+                </div>
+                <div class="animate-card">
+                    <h3>Technical Skills</h3>
+                    <div class="skills-grid">
+                        <div class="skill-item" data-skill="python">
+                            <div class="skill-icons">🐍</div>
+                            <div class="skill-header">
+                                <span class="skill-name">Python</span>
+                                <!-- <span class="skill-level">Expert • 95%</span> -->
+                            </div>
+                            <div class="skill-description">
+                                Advanced proficiency in Python for data science, ML frameworks, and automation scripts.
+                            </div>
+                        </div>
+                        <div class="skill-item" data-skill="visualization">
+                            <div class="skill-icons">📊</div>
+                            <div class="skill-header">
+                                <span class="skill-name">EDA</span>
+                                <!-- <span class="skill-level">Advanced • 88%</span> -->
+                            </div>
+                            <div class="skill-description">
+                                Creating insightful visualizations and performing comprehensive exploratory data analysis.
+                            </div>
+                        </div>
+
+                        <div class="skill-item" data-skill="ml">
+                            <div class="skill-icons">💻</div>
+                            <div class="skill-header">
+                                <span class="skill-name">Machine Learning</span>
+                                <!-- <span class="skill-level">Advanced • 90%</span> -->
+                            </div>
+                            <div class="skill-description">
+                                Expertise in supervised/unsupervised learning, feature engineering, and model optimization.
+                            </div>
+                        </div>
+
+                        <div class="skill-item" data-skill="dl">
+                            <div class="skill-icons">🧠</div>
+                            <div class="skill-header">
+                                <span class="skill-name">Deep Learning</span>
+                                <!-- <span class="skill-level">Advanced • 85%</span> -->
+                            </div>
+                            <div class="skill-description">
+                                Neural networks, CNNs, RNNs, and transformer architectures using TensorFlow/PyTorch.
+                            </div>
+                        </div>
+
+                        <div class="skill-item" data-skill="databases">
+                            <div class="skill-icons">🗄️</div>
+                            <div class="skill-header">
+                                <span class="skill-name">PostgreSQL, MongoDB, MySQL</span>
+                                <!-- <span class="skill-level">Expert • 92%</span> -->
+                            </div>
+                            <div class="skill-description">
+                                Database design, optimization, complex queries, and NoSQL/SQL database management.
+                            </div>
+                        </div>
+                                                <div class="skill-item" data-skill="genai">
+                            <div class="skill-icons">🔗</div>
+                            <div class="skill-header">
+                                <span class="skill-name">Gen AI (LangChain)</span>
+                                <!-- <span class="skill-level">Advanced • 85%</span> -->
+                            </div>
+                            <div class="skill-description">
+                                Building LLM applications, chains, and RAG systems using LangChain framework.
+                            </div>
+                        </div>
+
+                        <div class="skill-item" data-skill="agentic">
+                            <div class="skill-icons">🤖</div>
+                            <div class="skill-header">
+                                <span class="skill-name">Agentic AI (LangGraph, CrewAI)</span>
+                                <!-- <span class="skill-level">Advanced • 82%</span> -->
+                            </div>
+                            <div class="skill-description">
+                                Developing multi-agent systems and autonomous AI workflows with advanced orchestration.
+                            </div>
+                        </div>
+                        
+
+                        <div class="skill-item" data-skill="prompt">
+                            <div class="skill-icons">✍️</div>
+                            <div class="skill-header">
+                                <span class="skill-name">Prompt Engineering</span>
+                                <!-- <span class="skill-level">Expert • 93%</span> -->
+                            </div>
+                            <div class="skill-description">
+                                Crafting effective prompts for LLMs, few-shot learning, and AI model optimization.
+                            </div>
+                        </div>
+
+                        <!-- <div class="skill-item" data-skill="programming">
+                            <div class="skill-icons">💻🤝</div>
+                            <div class="skill-header">
+                                <span class="skill-name">Java, C Programming</span>
+                                <span class="skill-level">Intermediate • 75%</span>
+                            </div>
+                            <div class="skill-description">
+                                Solid foundation in object-oriented programming and system-level programming concepts.
+                            </div>
+                        </div> -->
+
+                        <!-- <div class="skill-item" data-skill="web">
+                            <div class="skill-icons">🌐</div>
+                            <div class="skill-header">
+                                <span class="skill-name">HTML, CSS</span>
+                                <span class="skill-level">Intermediate • 78%</span>
+                            </div>
+                            <div class="skill-description">
+                                Frontend development skills for creating responsive and interactive web interfaces.
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resume Section -->
+    <section id="resume" class="section">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title">Resume</h2>
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Education -->
+                <div class="animate-card p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-6 text-cyan-400">
+                        <i class="fas fa-graduation-cap mr-3"></i>Education
+                    </h3>
+                    <div class="timeline">
+                        
+                        <div class="timeline-item">
+                            <h4 class="text-xl font-semibold">Bachelor of Science in Computer Science</h4>
+                            <p class="text-cyan-400 font-medium">RGPV Bhopal</p>
+                            <p class="text-gray-400">2020 - 2024</p>
+                            <p class="text-gray-300 mt-2">
+                                Completed a comprehensive program in software development and algorithms, gaining hands-on experience with programming languages, data structures, and machine learning. Built a strong foundation in computer science and problem-solving.
+                                <br>SDBC of technology Indore, CGPA : 8.45/10
+                            </p>
+                        </div>
+                        <div class="timeline-item">
+                            <h4 class="text-xl font-semibold">Higher Secondary Education (PCM)</h4>
+                            <p class="text-cyan-400 font-medium">Shree Umiya Higher Secondary School, Raw Rangwasa, Indore, Madhya Pradesh</p>
+                            <p class="text-gray-400">2018 - 2020</p>
+                            <p class="text-gray-300 mt-2">
+                                Studied Physics, Chemistry, and Mathematics (PCM) with a focus on analytical thinking and practical applications. Participated in science projects and competitions to strengthen problem-solving skills.
+                                <br>Marks: 79%
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experience -->
+                <!-- <div class="animate-card p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-6 text-cyan-400">
+                        <i class="fas fa-briefcase mr-3"></i>Experience
+                    </h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <h4 class="text-xl font-semibold">Senior Data Scientist</h4>
+                            <p class="text-cyan-400 font-medium">TechCorp Inc.</p>
+                            <p class="text-gray-400">2021 - Present</p>
+                            <p class="text-gray-300 mt-2">
+                                Leading ML initiatives, developing predictive models, and 
+                                implementing data-driven solutions for business optimization.
+                            </p>
+                        </div>
+                        <div class="timeline-item">
+                            <h4 class="text-xl font-semibold">Data Scientist</h4>
+                            <p class="text-cyan-400 font-medium">DataFlow Solutions</p>
+                            <p class="text-gray-400">2020 - 2021</p>
+                            <p class="text-gray-300 mt-2">
+                                Built end-to-end ML pipelines, performed statistical analysis, 
+                                and created interactive dashboards for stakeholders.
+                            </p>
+                        </div>
+                        <div class="timeline-item">
+                            <h4 class="text-xl font-semibold">Data Analyst Intern</h4>
+                            <p class="text-cyan-400 font-medium">Analytics Pro</p>
+                            <p class="text-gray-400">2019 - 2020</p>
+                            <p class="text-gray-300 mt-2">
+                                Analyzed customer behavior patterns and created reports 
+                                that influenced strategic business decisions.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+            <div class="animate-card p-8 rounded-2xl">
+                <h3 class="text-2xl font-bold mb-6 text-cyan-400">
+                    <i class="fas fa-briefcase mr-3"></i>Experience
+                </h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4 class="text-xl font-semibold">Engineer Data Scientist</h4>
+                        <p class="text-cyan-400 font-medium">Experion, Indore, India</p>
+                        <p class="text-gray-400">2025 - Present</p>
+                        <p class="text-gray-300 mt-2">
+                            Designing and deploying machine learning models, building LLM-based applications, and implementing agentic AI workflows using CrewAI and LangGraph. Leveraged tools like OpenAI, Claude, and Hugging Face for generative AI projects. Developed data pipelines with Python and Flask, and integrated AI solutions into business processes.
+                            Leading a team in the development of a AI-driven product  for the company.
+                        </p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="text-xl font-semibold">Trainee Data Scientist</h4>
+                        <p class="text-cyan-400 font-medium">Experion, Indore, India</p>
+                        <p class="text-gray-400">2024- 2025</p>
+                        <p class="text-gray-300 mt-2">
+                            Gained hands-on experience with core data science techniques including EDA, model training, and evaluation. Built foundational skills in Python, Scikit-learn, and data visualization. Explored large language models and generative AI tools while learning the basics of agentic AI systems.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Visualization
+            <div class="mt-12">
+                <div class="animate-card p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-6 text-cyan-400 text-center">Skills Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="skillsChart"></canvas>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="section">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title">Projects</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project 1 -->
+                <div class="project-card">
+                    <div class="project-image relative">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-robot text-6xl text-cyan-200"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">Query Insight Engine</h3>
+                        <p class="text-gray-300 mb-4">
+                            Built an AI-driven engine that transforms complex marketing data analysis 
+                            into dynamic, conversational insights for faster and more strategic decisions.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">Python</span>
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">Streamlit</span>
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">LangChain</span>
+                        </div>
+                        <div class="flex space-x-4">
+                            <a href="https://github.com/nikitapatidar957/QIE" class="text-cyan-400 hover:text-cyan-300">
+                                <i class="fab fa-github mr-1"></i>Code
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Project 2 -->
+                <div class="project-card">      
+                    <div class="project-image relative">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-question-circle text-6xl text-cyan-200"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">QGen: AI Question Bank Generator</h3>
+                        <p class="text-gray-300 mb-4">
+                            Developed an AI-driven platform for automated, multi-format question generation with high accuracy and logical consistency across subjects.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">Python</span>
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">FastAPI</span>
+                        <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">React</span>
+                        <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">PostgreSQL</span>
+                    </div>
+                    <div class="flex space-x-4">
+                        <a href="https://github.com/nikitapatidar957/QAG" class="text-cyan-400 hover:text-cyan-300">
+                            <i class="fab fa-github mr-1"></i>Code
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+                <!-- Project 3 -->
+                <div class="project-card">
+                    <div class="project-image relative">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-file-alt text-6xl text-cyan-400"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">Brochure Bid Comparator System</h3>
+                        <p class="text-gray-300 mb-4">
+                            Developed an AI-powered document comparison tool to improve accuracy, efficiency, 
+                            and scalability in evaluating requirement and fulfillment documents using NLP and NLU techniques.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">Python</span>
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">LangChain</span>
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">Hugging Face</span>
+                        </div>
+                        <div class="flex space-x-4">
+                            <a href="https://github.com/nikitapatidar957/BCA" class="text-cyan-400 hover:text-cyan-300">
+                                <i class="fab fa-github mr-1"></i>Code
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                            <!-- Project 4 -->
+                <div class="project-card">
+                    <div class="project-image relative">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                        <i class="fas fa-eye text-6xl text-cyan-400"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">Automated Cheque Data Extraction System</h3>
+                        <p class="text-gray-300 mb-4">
+                        End-to-end cheque processing solution leveraging YOLOv8 for region detection and OCR for structured data extraction, designed to improve efficiency in banking operations.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">YOLOv8</span>
+                        <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">OCR</span>
+                        <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">OpenCV</span>
+                        </div>
+                        <div class="flex space-x-4">
+                        <a href="https://github.com/nikitapatidar957/Automated_Cheque_DES" class="text-cyan-400 hover:text-cyan-300">
+                            <i class="fab fa-github mr-1"></i>Code
+                        </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 5 -->
+                <div class="project-card">
+                    <div class="project-image relative">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-envelope-open-text text-6xl text-cyan-400"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">xSmart – AI Email Assistant</h3>
+                        <p class="text-gray-300 mb-4">
+                            Designed and developed xSmart, a smart AI-powered email assistant that generates personalized and context-aware emails for business users.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">Python</span>
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">OpenAI API</span>
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">LangChain</span>
+                        </div>
+                        <div class="flex space-x-4">
+                            <a href="https://github.com/nikitapatidar957/Email_gen" class="text-cyan-400 hover:text-cyan-300">
+                                <i class="fab fa-github mr-1"></i>Code
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Project 6 -->
+                <div class="project-card">
+                    <div class="project-image relative">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-prescription-bottle-alt text-6xl text-cyan-400"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">Pharmacy Management System</h3>
+                        <p class="text-gray-300 mb-4">
+                            Developed a comprehensive desktop-based Pharmacy Management System to streamline operations, improve patient care, and automate inventory and prescription processes.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">Java</span>
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">MySQL</span>
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-200 rounded-full text-sm">Java Swing</span>
+                        </div>
+                        <div class="flex space-x-4">
+                            <a href="https://github.com/nikitapatidar957/-Pharmacy-Management-System" class="text-cyan-400 hover:text-cyan-300">
+                                <i class="fab fa-github mr-1"></i>Code
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Contact Info -->
+                <div class="animate-card p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-6 text-cyan-400">Let's Connect</h3>
+                    <p class="text-gray-300 mb-8">
+                        I'm always interested in discussing new opportunities, innovative projects, 
+                        or just having a conversation about data science and technology. Feel free to reach out!
+                    </p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-cyan-900 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Email</h4>
+                                <p class="text-gray-300">nikitapatidar957@gmail.com</p>
+                            </div>
+                        </div>
+                        
+                        <!-- <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-cyan-900 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Phone</h4>
+                                <p class="text-gray-300">+1 (555) 123-4567</p>
+                            </div>
+                        </div> -->
+                        
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-cyan-900 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Location</h4>
+                                <p class="text-gray-300">Indore Madhya Pradesh</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Social Links -->
+                    <div class="mt-8">
+                        <h4 class="font-semibold mb-4">Follow Me</h4>
+                        <div class="flex space-x-4">
+                            <a href="https://www.linkedin.com/in/nikita-patidar-70a46a205/" class="social-link">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="https://github.com/nikitapatidar957" class="social-link">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <!-- <a href="#" class="social-link">
+                                <i class="fab fa-twitter"></i>
+                            </a> -->
+                            <!-- <a href="#" class="social-link">
+                                <i class="fab fa-kaggle"></i>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="fab fa-medium"></i>
+                            </a> -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact Form -->
+                <div class="animate-card p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-6 text-cyan-400">Send Message</h3>
+                    <form class="space-y-6">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">First Name</label>
+                                <input type="text" class="form-input w-full px-4 py-3 rounded-lg" placeholder="Nikita">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Last Name</label>
+                                <input type="text" class="form-input w-full px-4 py-3 rounded-lg" placeholder="Patidar">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Email</label>
+                            <input type="email" class="form-input w-full px-4 py-3 rounded-lg" placeholder="nikitapatidar957@example.com">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Subject</label>
+                            <input type="text" class="form-input w-full px-4 py-3 rounded-lg" placeholder="Project Collaboration">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Message</label>
+                            <textarea rows="5" class="form-input w-full px-4 py-3 rounded-lg resize-none" placeholder="Tell me about your project or inquiry..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary w-full">
+                            <i class="fas fa-paper-plane mr-2"></i>Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black bg-opacity-90 py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-400">
+                © 2025 Nikita Patidar. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Three.js Scene for Home
+        const homeScene = new THREE.Scene();
+        const homeCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const homeRenderer = new THREE.WebGLRenderer({ alpha: true });
+        homeRenderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('three-scene').appendChild(homeRenderer.domElement);
+
+        // Home Scene: Starry sky
+        const starGeometry = new THREE.BufferGeometry();
+        const starCount = 1000;
+        const positions = new Float32Array(starCount * 3);
+        for (let i = 0; i < starCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 2000;
+            positions[i + 1] = (Math.random() - 0.5) * 2000;
+            positions[i + 2] = (Math.random() - 0.5) * 2000;
+        }
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const starMaterial = new THREE.PointsMaterial({ color: 0x00f5ff, size: 2 });
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        homeScene.add(stars);
+
+        // Home Scene: Floating sphere with first professional image
+        const textureLoader = new THREE.TextureLoader();
+        const sphereGeometry = new THREE.SphereGeometry(2, 32, 32);
+        const sphereMaterial = new THREE.MeshBasicMaterial({
+            map: textureLoader.load('images/profile1.jpg'), // Local path to first image
+            transparent: true
+        });
+        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        sphere.position.set(0, 0, -10);
+        homeScene.add(sphere);
+
+        // Home Scene: Ambient light
+        const homeAmbientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        homeScene.add(homeAmbientLight);
+
+        homeCamera.position.z = 5;
+
+        // Home Scene: Animation loop
+        function animateHome3D() {
+            requestAnimationFrame(animateHome3D);
+            sphere.rotation.y += 0.005;
+            stars.rotation.y += 0.001;
+            homeRenderer.render(homeScene, homeCamera);
+        }
+        animateHome3D();
+
+        // Three.js Scene for About Section
+        const aboutScene = new THREE.Scene();
+        const aboutCamera = new THREE.PerspectiveCamera(75, window.innerWidth / 300, 0.1, 1000);
+        const aboutRenderer = new THREE.WebGLRenderer({ alpha: true });
+        aboutRenderer.setSize(window.innerWidth * 0.8, 300);
+        document.getElementById('about-three-scene').appendChild(aboutRenderer.domElement);
+
+        // About Scene: Floating plane with second professional image
+        const planeGeometry = new THREE.PlaneGeometry(4, 4);
+        const planeMaterial = new THREE.MeshBasicMaterial({
+            map: textureLoader.load('images/nikita1.jpeg'), // Local path to second image
+            side: THREE.DoubleSide,
+            transparent: true
+        });
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.position.set(0, 0, -5);
+        aboutScene.add(plane);
+
+        // About Scene: Glow effect
+        const glowGeometry = new THREE.PlaneGeometry(4.5, 4.5);
+        const glowMaterial = new THREE.MeshBasicMaterial({
+            color: 0x00f5ff,
+            transparent: true,
+            opacity: 0.2,
+            side: THREE.DoubleSide
+        });
+        const glowPlane = new THREE.Mesh(glowGeometry, glowMaterial);
+        glowPlane.position.set(0, 0, -5.1);
+        aboutScene.add(glowPlane);
+
+        // About Scene: Ambient light
+        const aboutAmbientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        aboutScene.add(aboutAmbientLight);
+
+        aboutCamera.position.z = 5;
+
+        // About Scene: Animation loop
+        function animateAbout3D() {
+            requestAnimationFrame(animateAbout3D);
+            plane.rotation.y += 0.01;
+            plane.rotation.x = Math.sin(Date.now() * 0.001) * 0.2;
+            glowPlane.rotation.y = plane.rotation.y;
+            glowPlane.rotation.x = plane.rotation.x;
+            aboutRenderer.render(aboutScene, aboutCamera);
+        }
+        animateAbout3D();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            homeCamera.aspect = window.innerWidth / window.innerHeight;
+            homeCamera.updateProjectionMatrix();
+            homeRenderer.setSize(window.innerWidth, window.innerHeight);
+
+            aboutCamera.aspect = window.innerWidth / 300;
+            aboutCamera.updateProjectionMatrix();
+            aboutRenderer.setSize(window.innerWidth * 0.8, 300);
+        });
+
+        // Interactive camera movement for Home Scene
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+            homeCamera.position.x = mouseX * 2;
+            homeCamera.position.y = mouseY * 2;
+            homeCamera.lookAt(0, 0, -10);
+        });
+
+        // Particle Animation
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const particles = [];
+        const numberOfParticles = 100;
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.opacity = Math.random() * 0.5 + 0.3;
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = '#00f5ff';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        for (let i = 0; i < numberOfParticles; i++) {
+            particles.push(new Particle());
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 100) {
+                        ctx.globalAlpha = 0.1;
+                        ctx.strokeStyle = '#00f5ff';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Typing Animation
+        const roles = [
+            'Data Scientist',
+            'machine learning Engineer', 
+            'Deep Learning Practitioner',
+            'Generative AI Specialist',
+            'Agentic AI Developer'
+        ];
+        
+        let roleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typingElement = document.getElementById('typing-text');
+        
+        function typeRole() {
+            const currentRole = roles[roleIndex];
+            
+            if (isDeleting) {
+                typingElement.textContent = currentRole.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingElement.textContent = currentRole.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            let typeSpeed = 100;
+            
+            if (isDeleting) {
+                typeSpeed /= 2;
+            }
+            
+            if (!isDeleting && charIndex === currentRole.length) {
+                typeSpeed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                roleIndex = (roleIndex + 1) % roles.length;
+                typeSpeed = 500;
+            }
+            
+            setTimeout(typeRole, typeSpeed);
+        }
+        
+        typeRole();
+
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                if (targetSection) {
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Active Navigation
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        
+        // Add click interactions for mobile
+        document.querySelectorAll('.skill-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Toggle active state on mobile
+                this.classList.toggle('mobile-active');
+            });
+        });
+
+        // Add some dynamic effects
+        document.querySelectorAll('.skill-item').forEach((item, index) => {
+            item.style.animationDelay = `${index * 0.1}s`;
+            
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = `translateY(-8px) scale(1.02)`;
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = `translateY(0) scale(1)`;
+            });
+        });
+    
+        // Skills Chart
+        const skillsCtx = document.getElementById('skillsChart').getContext('2d');
+        new Chart(skillsCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Python/R', 'Machine Learning', 'Deep Learning', 'Data Viz', 'Statistics', 'Big Data'],
+                datasets: [{
+                    label: 'Skill Level',
+                    data: [95, 90, 85, 88, 92, 80],
+                    borderColor: '#00f5ff',
+                    backgroundColor: 'rgba(0, 245, 255, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#00f5ff',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            color: '#ffffff',
+                            backdropColor: 'transparent'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        angleLines: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        pointLabels: {
+                            color: '#ffffff',
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Mobile Menu
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const navLinksContainer = document.querySelector('.navbar .md\\:flex');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinksContainer.classList.toggle('hidden');
+            mobileMenuBtn.querySelector('i').classList.toggle('fa-bars');
+            mobileMenuBtn.querySelector('i').classList.toggle('fa-times');
+        });
+
+        // Form Submission
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Thank you for your message! I\'ll get back to you soon.');
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-card, .project-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(50px) rotateX(-10deg)';
+            card.style.transition = 'all 0.8s ease';
+            observer.observe(card);
+        });
+
+        // Project card hover effects
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                card.style.transform = `translateY(-10px) rotateX(${y / 10}deg) rotateY(${x / 10}deg)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
